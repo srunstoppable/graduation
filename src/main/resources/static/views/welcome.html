@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+    <script src="/js/layui-v2.4.3/layui/layui.js"></script>
+    <script type="text/javascript" src="../js/jQuery/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../js/jQuery/locale/easyui-lang-zh_CN.js"></script>
+    <link rel="stylesheet" type="text/css" href="../js/jQuery/themes/default/easyui.css"/>
+    <link rel="stylesheet" type="text/css" href="../js/jQuery/themes/icon.css"/>
+    <link rel="stylesheet" href="/js/layui-v2.4.3/layui/css/layui.css" media="all"/>
+</head>
+<body>
+<h2 align="center">欢迎使用车位管理系统</h2>
+<div class="layui-form-item">
+    <div class="layui-inline">
+        <label class="layui-form-label">总车位</label>
+        <div class="layui-input-inline">
+            <input type="text" name="total" id="total" class="layui-input" style="border: none" disabled>
+        </div>
+    </div>
+    <div class="layui-inline">
+        <label class="layui-form-label">剩余小车位</label>
+        <div class="layui-input-inline">
+            <input type="text" name="usableSmall" id="usableSmall" class="layui-input" style="border: none" disabled>
+        </div>
+    </div>
+    <div class="layui-inline">
+        <label class="layui-form-label">剩余大车位</label>
+        <div class="layui-input-inline">
+            <input type="tel" name="usableBig" id="usableBig" class="layui-input" style="border: none" disabled>
+        </div>
+    </div>
+</div>
+<div class="layui-form-item">
+    <div class="layui-inline">
+        <label class="layui-form-label">固定收费</label>
+        <div class="layui-input-inline">
+            <input type="text" name="fixedCharge" id="fixedCharge" class="layui-input" style="border: none" disabled>
+        </div>
+    </div>
+    <div class="layui-inline">
+        <label class="layui-form-label">超时收费(小时)</label>
+        <div class="layui-input-inline">
+            <input type="text" name="changedCharge" id="changedCharge" class="layui-input" style="border: none"
+                   disabled>
+        </div>
+    </div>
+    <div class="layui-inline">
+        <label class="layui-form-label">超时收费(天)</label>
+        <div class="layui-input-inline">
+            <input type="text" name="day" id="day" class="layui-input" style="border: none"
+                   disabled>
+        </div>
+    </div>
+</div>
+<div STYLE="width: 500px;height: 500px">
+    <img src="/img/image.JPG" style="height: 500px;height: 500px">
+</div>
+<script>
+    $(document).ready(function () {
+        $.ajaxSetup({
+            headers: {
+                "Authorization": window.localStorage.getItem("token")
+            }
+        });
+        $.ajax({
+            type: "get",
+            url: "/park/status",
+            contentType: "application/json;charset=utf-8",
+            success: function (result) {
+                var total = document.getElementById("total");
+                var small = document.getElementById("usableSmall");
+                var big = document.getElementById("usableBig")
+                var fixed = document.getElementById("fixedCharge");
+                var changed = document.getElementById("changedCharge");
+                var fixedDay = document.getElementById("day");
+                total.value = result.data.total;
+                small.value = result.data.usableSmall;
+                big.value = result.data.usableBig;
+                fixed.value = result.data.fixedCharge;
+                changed.value = result.data.changedCharge;
+                fixedDay.value = result.data.fixedDay;
+            }
+
+        })
+        ;
+
+
+    })
+
+
+</script>
+</body>
+</html>

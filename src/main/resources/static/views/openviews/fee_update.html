@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>费用修改</title>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+    <script src="/js/layui-v2.4.3/layui/layui.js"></script>
+    <script src="/js/pub_js/time.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/jQuery/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/jQuery/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/utf8-jsp/ueditor.config.js"></script>
+    <script type="text/javascript" src="/js/utf8-jsp/ueditor.all.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/js/utf8-jsp/lang/zh-cn/zh-cn.js"></script>
+    <link rel="stylesheet" href="/js/layui-v2.4.3/layui/css/layui.css" media="all">
+</head>
+<body>
+<form class="layui-form" action="">
+    <div class="layui-form-item" style="width:40%">
+        <label class="layui-form-label">id</label>
+        <div class="layui-input-block">
+            <input type="text" name="id" id="id" required lay-verify="required" autocomplete="off" class="layui-input"
+                   readonly unselectable="on" style="width: 200px;">
+        </div>
+    </div>
+    <div class="layui-form-item" style="width:80%">
+        <label class="layui-form-label">描述</label>
+        <div class="layui-input-block">
+            <input type="text" id="comment" name="comment" required lay-verify="required" autocomplete="off"
+                   class="layui-input" unselectable="on" style="width: 200px;">
+        </div>
+    </div>
+    <div class="layui-form-item" style="width:100%">
+        <label class="layui-form-label">单位时间</label>
+        <div class="layui-input-block">
+            <input type="text" id="time" name="time" required lay-verify="required" placeholder="请输入单位时间"
+                   autocomplete="off" class="layui-input" style="width: 200px;">
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">价格</label>
+        <div class="layui-input-block" style="width: 200px;">
+            <input type="text" id="price" name="price" required lay-verify="required" placeholder="请输入价格"
+                   autocomplete="off" class="layui-input" style="width: 200px;">
+
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">修改</button>
+
+        </div>
+    </div>
+</form>
+
+<script>
+    //Dem
+
+
+    layui.use('form', function () {
+        var $ = layui.jquery;
+        $.ajaxSetup({
+            headers: {
+                "Authorization": window.localStorage.getItem("token")
+            }
+        });
+
+        var form = layui.form;
+        form.on('submit(formDemo)', function (data) {
+            var JsonData = JSON.stringify(data.field);
+            $.ajax({
+                type: "put",
+                url: "/fee/update",
+                dataType: "json",
+                contentType: "application/json",
+                data: JsonData,
+                success: function (result) {
+                    if (result.msg == 'success') {
+                        parent.location.reload();
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
+                        parent.location.reload();
+                    }
+                    else {
+                        alert(result.msg);
+                    }
+                }
+            });
+            return false;
+        });
+    });
+
+
+</script>
+
+</body>
+</html>

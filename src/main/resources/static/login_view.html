@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+    <script src="/js/layui-v2.4.3/layui/layui.js"></script>
+    <script type="text/javascript" src="../js/jQuery/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../js/jQuery/locale/easyui-lang-zh_CN.js"></script>
+    <link rel="stylesheet" type="text/css" href="../js/jQuery/themes/default/easyui.css"/>
+    <link rel="stylesheet" type="text/css" href="../js/jQuery/themes/icon.css"/>
+    <link rel="stylesheet" href="/js/layui-v2.4.3/layui/css/layui.css" media="all"/>
+
+    <style>
+
+        .Mainform {
+            text-align: center;
+            margin: 200px auto;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<div class="layui-form Mainform">
+    <form>
+        <table class="layui-table Mainform" align="center" style="height: 480px; width: 350px;" cellspacing="0">
+            <tbody>
+            <tr>
+                <td colspan="2" align="center">用户登录
+            </tr>
+            <tr>
+                <td width="100px" align="center">用户名
+                    <div style="width: 45px;height: 45px;overflow: hidden;">
+                        <img src="img/001.png">
+                    </div>
+                    <input name="id" id="id" type="text" width="200px" placeholder="请输入用户名" class="layui-input"/></td>
+            </tr>
+            <tr>
+                <td width="100px" align="center">密码
+                    <div style="width: 45px;height: 45px;overflow: hidden;">
+                        <img src="img/001.png" style="margin-top: -65px;">
+                    </div>
+                    <input name="password" id="password" type="password" width="100%" placeholder="请输入密码"
+                           class="layui-input"/></td>
+            </tr>
+            <!--  <tr>
+            <td colspan="2" align="center"><label><input name="identity" id="identity" type="radio" value="teacher"/>教师</label><label><input name="identity" type="radio" value="student" checked="checked"/>学生</label></td>
+            </tr>-->
+            <tr>
+                <td colspan="2" align="center"><input type="button" value="登陆" id="butt"
+                                                      class="layui-btn layui-btn-primary"/><input type="reset"
+                                                                                                  value="重置"
+                                                                                                  class="layui-btn layui-btn-primary"/>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+    <script>
+        function check() {
+            var x = document.getElementById("id").value;
+            var y = document.getElementById("password").value;
+            if (x == null || x == "") {
+                alert("请输入用户名!");
+                return false;
+            }
+            if (y == null || y == "") {
+                alert("请输入密码");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#butt").click(function () {
+                var flag = check();
+                if (flag) {
+                    var formData = new Object;
+                    formData.id = $("#id").val();
+                    formData.password = $("#password").val();
+                    var JsonData = JSON.stringify(formData);
+                    console.log(JsonData);
+                    $.ajax({
+                        type: "post",
+                        url: "/user/login",
+                        contentType: "application/json;charset=utf-8",
+                        data: JsonData,
+                        success: function (result) {
+                            if (result.code == 0) {
+                                window.location.href = "/views/index.html";
+                                window.localStorage.setItem("token", result.data);
+
+                            }
+                            else
+                                alert(result.msg);
+                        }
+                    });
+                }
+            });
+
+        });
+    </script>
+</div>
+
+
+</body>
+</html>

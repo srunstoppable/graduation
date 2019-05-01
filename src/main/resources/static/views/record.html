@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+    <script src="/js/layui-v2.4.3/layui/layui.js"></script>
+    <script src="/js/pub_js/time.js" type="text/javascript" charset="utf-8"></script>
+    <script id="createTime" type="text/html">
+        {{#
+        var date = new Date();
+        date.setTime(d.createTime);
+        return date.Format("yyyy-MM-dd hh:mm:ss");
+        }}
+    </script>
+    <script type="text/javascript" src="/js/jQuery/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/utf8-jsp/ueditor.config.js"></script>
+    <script type="text/javascript" src="/js/utf8-jsp/ueditor.all.js"></script>
+    <link rel="stylesheet" href="/js/layui-v2.4.3/layui/css/layui.css" media="all">
+</head>
+<body>
+<script type="text/html" id="toolbarDemo">
+    <!--<div class="layui-btn-container">-->
+    <button class="layui-btn layui-btn-sm" lay-event="addB">大型车量入场</button>
+    <button class="layui-btn layui-btn-sm" lay-event="addS">小型车量入场</button>
+    <button class="layui-btn layui-btn-sm" lay-event="out">车辆离场</button>
+    <label>小车剩余:</label>
+    <input  type="text" style="width:50px;border: none" id="usableSmall" disabled/>
+    <label>大车剩余:</label>
+    <input  type="text" style="width:50px;border: none" id="usableBig" disabled/>
+
+    <!--<button class="layui-btn layui-btn-sm" lay-event="del">删除</button>-->
+    <!--<button class="layui-btn layui-btn-sm" lay-event="save">新增</button>-->
+    <!--<input   style="width: 200px;height: 30px;line-height: 30px"  id="condition">-->
+    <!--<button class="layui-btn layui-btn-sm" lay-event="lookFor">搜索</button>-->
+    <!--<button class="layui-btn layui-btn-sm" lay-event="check">检查</button>-->
+</script>
+<div style="padding: 15px;">
+    <table id="test" style="height: 100%" lay-filter="park">
+    </table>
+</div>
+
+</div>
+
+<script>
+    layui.use('table', function () {
+        var layer = layui.layer;
+        var table = layui.table;
+        var $ = layui.jquery;
+        $.ajaxSetup({
+            headers: {
+                "Authorization": window.localStorage.getItem("token")
+            }
+        });
+        $.ajax({
+            type: "get",
+            url: "/park/status",
+            contentType: "application/json;charset=utf-8",
+            success: function (result) {
+                var small = document.getElementById("usableSmall");
+                var big = document.getElementById("usableBig")
+                small.value = result.data.usableSmall;
+                big.value = result.data.usableBig;
+            }
+
+        })
+        ;
+
+
+        table.render({
+            height: 'full-200',
+            elem: '#test',
+            url: '/record/list',
+            toolbar: '#toolbarDemo',
+            title: '车位管理',
+            page: true,
+            cols: [[
+                {type: 'checkbox', fixed: 'left'},
+                {field: 'id', title: "车牌号", sort: false},
+                {field: 'begintime', title: "入场时间", sort: false},
+                {field: 'code', title: "车位号", sort: false},
+                {field: 'parkid', title: "所在区域号", sort: false},
+                {field: 'floor', title: "层数", sort: false}
+            ]]
+        });
+        table.on('toolbar(park)', function (obj) {
+            if (obj.event == 'addB') {
+                $.ajax({
+                    type: "post",
+                    url: "/park/big",
+                    success: function (result) {
+                        if (result) {
+                            layer.open({
+                                id: "update",
+                                type: 2,
+                                content: "openviews/bigIn.html",
+                                area: ['800px', '600px'],
+                                offset: ['20px'],
+                            });
+                        }
+                        else {
+                            layer.alert("大型车位已满。请离场!");
+                        }
+                    }
+                });
+
+
+            }
+            else if (obj.event == 'addS') {
+                $.ajax({
+                    type: "post",
+                    url: "/park/small",
+                    success: function (result) {
+                        if (result) {
+                            layer.open({
+                                id: "update",
+                                type: 2,
+                                content: "openviews/smallIn.html",
+                                area: ['800px', '600px'],
+                                offset: ['20px'],
+                            });
+                        }
+                        else {
+                            layer.alert("小型车位已满。请离场!");
+                        }
+                    }
+                });
+
+
+            }
+
+
+            else if (obj.event == 'out') {
+                var checkStatus = table.checkStatus(obj.config.id);
+                var data = checkStatus.data;
+                var JsonData = data[0];
+                console.log(JsonData);
+                if (data.length < 1) {
+                    layer.alert("请选择离场的车辆");
+                }
+                else if (data.length > 1) {
+                    layer.alert("请选区单个车辆进行离场操作");
+                } else {
+                    if (confirm("确定离场？")) {
+                        $.ajax({
+                            type: "get",
+                            url: "/record/out",
+                            data: {"id": JsonData.id},
+                            success: function (result) {
+                                console.log(result);
+                                layer.open({
+                                    id: "update",
+                                    type: 2,
+                                    content: "openviews/out.html",
+                                    area: ['800px', '600px'],
+                                    offset: ['20px'],
+                                    success: function (selector, index) {
+                                        var body = layer.getChildFrame('body', index);
+                                        var iframeWin = window[selector.find('iframe')[0]['name']];
+                                        body.find('#beginTime').val(result.data.beginTime);
+                                        body.find('#outTime').val(result.data.outTime);
+                                        body.find('#fee').val(result.data.fee + "￥");
+                                        body.find('#way').val(result.data.way);
+                                    }
+                                });
+                            }
+                        });
+
+                    }
+                }
+            }
+            if (obj.event == "save") {
+                layer.open({
+                    id: "save",
+                    type: 2,
+                    content: 'saveFormula.html',
+                    offset: ['20px'],
+                    area: ['800px', '600px'],
+                });
+            }
+        });
+    });
+
+</script>
+
+
+</body>
+</html>

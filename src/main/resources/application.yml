@@ -1,0 +1,14 @@
+server:
+  port: 8081
+  tomcat:
+    uri-encoding: UTF-8
+spring:
+  profiles:
+    active: dev
+
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+
+
+

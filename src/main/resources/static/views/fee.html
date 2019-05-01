@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+    <script src="/js/layui-v2.4.3/layui/layui.js"></script>
+    <script src="/js/pub_js/time.js" type="text/javascript" charset="utf-8"></script>
+    <script id="createTime" type="text/html">
+        {{#
+        var date = new Date();
+        date.setTime(d.createTime);
+        return date.Format("yyyy-MM-dd hh:mm:ss");
+        }}
+    </script>
+    <script type="text/javascript" src="/js/jQuery/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/utf8-jsp/ueditor.config.js"></script>
+    <script type="text/javascript" src="/js/utf8-jsp/ueditor.all.js"></script>
+    <link rel="stylesheet" href="/js/layui-v2.4.3/layui/css/layui.css" media="all">
+</head>
+<body>
+<script type="text/html" id="toolbarDemo">
+    <!--<div class="layui-btn-container">-->
+    <button class="layui-btn layui-btn-sm" lay-event="edit">编辑</button>
+    <!--<button class="layui-btn layui-btn-sm" lay-event="del">删除</button>-->
+    <!--<button class="layui-btn layui-btn-sm" lay-event="save">新增</button>-->
+    <!--<input   style="width: 200px;height: 30px;line-height: 30px"  id="condition">-->
+    <!--<button class="layui-btn layui-btn-sm" lay-event="lookFor">搜索</button>-->
+    <!--<button class="layui-btn layui-btn-sm" lay-event="check">检查</button>-->
+</script>
+<div style="padding: 15px;">
+    <table id="test" style="height: 100%" lay-filter="park">
+    </table>
+</div>
+
+</div>
+
+<script>
+    layui.use('table', function () {
+        var layer = layui.layer;
+        var table = layui.table;
+        var $ = layui.jquery;
+        $.ajaxSetup({
+            headers: {
+                "Authorization": window.localStorage.getItem("token")
+            }
+        });
+
+        table.render({
+            height: 'full-200',
+            elem: '#test',
+            url: '/fee/list',
+            toolbar: '#toolbarDemo',
+            title: '费用管理管理',
+            cols: [[
+                {type: 'checkbox', fixed: 'left'},
+                {field: 'id', title: "id"},
+                {field: 'comment', title: "费用类型"},
+                {field: 'time', title: "单位时间"},
+                {field: 'price', title: "价格"}
+            ]]
+        });
+        table.on('toolbar(park)', function (obj) {
+
+            if (obj.event == 'edit') {
+                var checkStatus = table.checkStatus(obj.config.id);
+                var data = checkStatus.data;
+                var JsonData = data[0];
+                console.log(JsonData);
+                if (data.length < 1) {
+                    layer.alert("请选中一条记录");
+                }
+                else if (data.length > 1) {
+                    layer.alert("请选中单挑记录进性修改");
+                }
+                else {
+                    layer.open({
+                        id: "update",
+                        type: 2,
+                        content: "openviews/fee_update.html",
+                        area: ['800px', '600px'],
+                        offset: ['20px'],
+                        success: function (selector, index) {
+                            var body = layer.getChildFrame('body', index);
+                            var iframeWin = window[selector.find('iframe')[0]['name']];
+                            console.log(JsonData.content);
+                            body.find('#id').val(JsonData.id);
+                            body.find('#comment').val(JsonData.comment);
+                            body.find('#time').val(JsonData.time);
+                            body.find('#price').val(JsonData.price);
+                        }
+                    });
+                }
+            }
+
+        });
+    });
+
+</script>
+
+
+</body>
+</html>

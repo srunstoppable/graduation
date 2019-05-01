@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>车位信息修改</title>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+    <script src="/js/layui-v2.4.3/layui/layui.js"></script>
+    <script src="/js/pub_js/time.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/jQuery/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/jQuery/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/utf8-jsp/ueditor.config.js"></script>
+    <script type="text/javascript" src="/js/utf8-jsp/ueditor.all.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/js/utf8-jsp/lang/zh-cn/zh-cn.js"></script>
+    <link rel="stylesheet" href="/js/layui-v2.4.3/layui/css/layui.css" media="all">
+</head>
+<body>
+<form class="layui-form" action="">
+    <div class="layui-form-item" style="width:40%">
+        <label class="layui-form-label">车牌号</label>
+        <div class="layui-input-block">
+            <input type="text" name="carid" id="carid" required lay-verify="required" placeholder="请输入区域号" autocomplete="off"
+                   class="layui-input" readonly unselectable="on" style="width: 200px;">
+        </div>
+    </div>
+    <div class="layui-form-item" style="width:80%">
+        <label class="layui-form-label">区域号</label>
+        <div class="layui-input-block">
+            <input type="text" id="parkid" name="parkid" required lay-verify="required" placeholder="请输入总车位"
+                   autocomplete="off" class="layui-input" unselectable="on" style="width: 200px;">
+        </div>
+    </div>
+    <div class="layui-form-item" style="width:100%">
+        <label class="layui-form-label">车位号</label>
+        <div class="layui-input-block">
+            <input type="text" id="code" name="code" required lay-verify="required" placeholder="请输入已用车位"
+                   autocomplete="off" class="layui-input" style="width: 200px;" readonly>
+        </div>
+    </div>
+
+    <div class="layui-form-item" style="width:80%">
+        <label class="layui-form-label">车位停放其他位置，请输入以下信息!</label>
+    </div>
+
+    <div class="layui-form-item" style="width:80%">
+        <label class="layui-form-label">更改后区域号</label>
+        <div class="layui-input-block">
+            <input type="text" id="parkidUp" name="parkidUp" required lay-verify="required" placeholder="请输入更改后区域号"
+                   autocomplete="off" class="layui-input" unselectable="on" style="width: 200px;">
+        </div>
+    </div>
+    <div class="layui-form-item" style="width:100%">
+        <label class="layui-form-label">更改后车位号</label>
+        <div class="layui-input-block">
+            <input type="text" id="codeUp" name="codeUp" required lay-verify="required" placeholder="请输入更改后车位号"
+                   autocomplete="off" class="layui-input" style="width: 200px;" >
+        </div>
+    </div>
+
+    <!--<div class="layui-form-item layui-form-text">-->
+        <!--<label class="layui-form-label">类型</label>-->
+        <!--<div class="layui-input-block" style="width: 200px;">-->
+            <!--<select name="type" id="type">-->
+                <!--<option value="small">small(小型车位)</option>-->
+                <!--<option value="big">big(小型车位)</option>-->
+            <!--</select>-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">修改</button>
+
+        </div>
+    </div>
+</form>
+
+<script>
+    //Dem
+
+
+    layui.use('form', function () {
+        var $ = layui.jquery;
+        var layer =layui.layer;
+        $.ajaxSetup({
+            headers: {
+                "Authorization": window.localStorage.getItem("token")
+            }
+        });
+
+        var form = layui.form;
+        form.on('submit(formDemo)', function (data) {
+            var JsonData = JSON.stringify(data.field);
+            $.ajax({
+                type: "put",
+                url: "/lot/update",
+                dataType: "json",
+                contentType: "application/json",
+                data: JsonData,
+                success: function (result) {
+                    if (result.msg == 'success') {
+                        parent.location.reload();
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
+                        parent.location.reload();
+                    }
+                    else {
+                        layer.alert(result.msg);
+                    }
+                }
+            });
+            return false;
+        });
+    });
+
+
+</script>
+
+</body>
+</html>
