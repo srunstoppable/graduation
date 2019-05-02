@@ -47,9 +47,8 @@ public class PathController {
         //最短路径及长度
         //首先调用最短路径算法，把入口到所有路口的最短路路径求出
         List<List> list = pathService.shortPath(id);
-        System.out.print(list.get(0).toString());
-        System.out.print(list.get(1).toString());
-
+//        System.out.print(list.get(0).toString());
+//        System.out.print(list.get(1).toString());
         //找出小车车有空位的区域
         Support support = getBigPathList2(list, parkService, lotService);
         //路径
@@ -78,12 +77,11 @@ public class PathController {
          */
         int vertex = Integer.valueOf(al.get(0));
         double length = Double.valueOf(map.get(String.valueOf(vertex)));
-        System.out.println(vertex + ":" + length + " :" + l.get(vertex));
+//        System.out.println(vertex + ":" + length + " :" + l.get(vertex));
         Park park = parks.get(vertex);
         Lot lot = lots.get(vertex);
         List paths = (List) l.get(vertex);
         record.setParkid(park.getId()).setFloor(park.getFloor());
-
         //模拟自动检测，尾号为7时模拟进错车位，然后通过车牌号查询所在车位，并与实际车位比较，若不相符，则修改信息。
         boolean flag = false;
         LotUpdate lotUpdate = null;
@@ -142,7 +140,7 @@ public class PathController {
         for (int i = 0; i < list1.size(); i++) {
             map.put(Integer.toString((int) list1.get(i)), Double.toString((l1.get((int) list1.get(i)))));
         }
-        System.out.println(map.toString());
+//        System.out.println(map.toString());
         /**
          *   排序后的map 第一个元素极为最近区域附近的路口
          */
@@ -175,8 +173,8 @@ public class PathController {
         //最短路径及长度
         //首先调用最短路径算法，把入口到所有路口的最短路路径求出
         List<List> list = pathService.shortPath(id);
-        System.out.print(list.get(0).toString());
-        System.out.print(list.get(1).toString());
+//        System.out.print(list.get(0).toString());
+//        System.out.print(list.get(1).toString());
 
         //找出小车车有空位的区域
         Support support = getSmallPathList2(list, parkService, lotService);
@@ -195,7 +193,7 @@ public class PathController {
         for (int i = 0; i < list1.size(); i++) {
             map.put(Integer.toString((int) list1.get(i)), Double.toString((l1.get((int) list1.get(i)))));
         }
-        System.out.println(map.toString());
+//        System.out.println(map.toString());
         /**
          *   排序后的map 第一个元素极为最近区域附近的路口
          */
